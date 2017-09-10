@@ -66,10 +66,14 @@ def crypto(env):
 def billing(env):
     balanced.configure(env.balanced_api_secret)
 
-    if env.braintree_sandbox_mode:
+    if env.braintree_mode == 'offline':
+        return
+    elif env.braintree_mode == 'sandbox':
         braintree_env = braintree.Environment.Sandbox
-    else:
+    elif env.braintree_mode == 'production':
         braintree_env = braintree.Environment.Production
+    else:
+        raise ValueError(env.braintree_mode)
 
     braintree.Configuration.configure(
         braintree_env,
@@ -347,7 +351,7 @@ def env():
         GRATIPAY_CACHE_STATIC           = is_yesish,
         GRATIPAY_COMPRESS_ASSETS        = is_yesish,
         BALANCED_API_SECRET             = unicode,
-        BRAINTREE_SANDBOX_MODE          = is_yesish,
+        BRAINTREE_MODE                  = unicode,
         BRAINTREE_MERCHANT_ID           = unicode,
         BRAINTREE_PUBLIC_KEY            = unicode,
         BRAINTREE_PRIVATE_KEY           = unicode,
